@@ -12,8 +12,8 @@
 #'The function also provides additional filtering parameters to narrow the results based following parameters (see below)
 #'
 #' @param gene Character: Gene ENSEMBL ID (e.g. ENSG00000169174) or gene symbol (e.g. PCSK9). This argument can take a list of genes too.
-#' @param l2g Numeric: Locus-to-gene (L2G) cutoff score. (Default: 0.4)
-#' @param pvalue Character: P-value cutoff. (Default: 5e-8)
+#' @param l2g Numeric: Locus-to-gene (L2G) cutoff score. (Default: NA)
+#' @param pvalue Character: P-value cutoff. (Default: NA)
 #' @param vtype Character: Most severe consequence to filter the variant types, including "intergenic_variant",
 #' "upstream_gene_variant", "intron_variant", "missense_variant", "5_prime_UTR_variant",
 #' "non_coding_transcript_exon_variant", "splice_region_variant". (Default: NULL)
@@ -63,7 +63,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' result <- studiesAndLeadVariantsForGeneByL2G(genes = list("ENSG00000163946",
+#' result <- studiesAndLeadVariantsForGeneByL2G(genes = c("ENSG00000163946",
 #'      "ENSG00000169174", "ENSG00000143001"), l2g = 0.7)
 #' result <- studiesAndLeadVariantsForGeneByL2G(genes = "ENSG00000169174",
 #'      l2g = 0.6, pvalue = 1e-8, vtype = c("intergenic_variant", "intron_variant"))
@@ -73,14 +73,16 @@
 #' @export
 #'
 #'
-studiesAndLeadVariantsForGeneByL2G <- function(gene, l2g = 0.4, pvalue = 5e-8, vtype = NULL) {
+studiesAndLeadVariantsForGeneByL2G <- function(gene, l2g = NA, pvalue = NA, vtype = NULL) {
   if (missing(gene) || is.null(gene)) {
     message("Please provide a value for the 'gene' argument.")
     return(NULL)
   }
 
   # Set up to query Open Targets Genetics API
-  cli::cli_progress_step("Connecting the database...", spinner = TRUE)
+
+tryCatch({
+  cli::cli_progress_step("Connecting to the Open Targets Genetics GrpahQL API...", spinner = TRUE)
   con <- ghql::GraphqlClient$new("https://api.genetics.opentargets.org/graphql")
   qry <- ghql::Query$new()
 
@@ -201,9 +203,17 @@ studiesAndLeadVariantsForGeneByL2G <- function(gene, l2g = 0.4, pvalue = 5e-8, v
       output1$data$studiesAndLeadVariantsForGeneByL2G$gene_symbol <- rep(output1$data$geneInfo$symbol,
                                                                          length(output1$data$studiesAndLeadVariantsForGeneByL2G$yProbaModel))
 
-      final_output <- dplyr::bind_rows(final_output, output1$data$studiesAndLeadVariantsForGeneByL2G) %>%
-        dplyr::filter(yProbaModel >= l2g, pval <= pvalue) %>%
-        dplyr::mutate(across((yProbaModel:yProbaPathogenicity), ~ round(., 3)))
+     final_output <- dplyr::bind_rows(final_output, output1$data$studiesAndLeadVariantsForGeneByL2G)
+
+      if (!is.na(l2g)) {
+        final_output <- final_output %>% dplyr::filter(yProbaModel >= l2g)
+      }
+
+      if (!is.na(pvalue)) {
+        final_output <- final_output %>% dplyr::filter(pval <= pvalue)
+      }
+
+      final_output <- final_output %>% dplyr::mutate(across((yProbaModel:yProbaPathogenicity), ~ round(., 3)))
 
       if (!is.null(vtype)) {
         final_output <- final_output %>%
@@ -217,4 +227,13 @@ studiesAndLeadVariantsForGeneByL2G <- function(gene, l2g = 0.4, pvalue = 5e-8, v
   }
 
   return(final_output)
+
+}, error = function(e) {
+  # Handling connection timeout
+  if(grepl("Timeout was reached", e$message)) {
+    stop("Connection timeout reached while connecting to the Open Targets Genetics GraphQL API.")
+  } else {
+    stop(e) # Handle other types of errors
+  }
+})
 }

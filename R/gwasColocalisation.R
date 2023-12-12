@@ -1,8 +1,8 @@
 #' Retrieve calculated GWAS colocalisation data
 #'
-#' This function retrieves information about colocalisation between two independent associations from GWAS studies.
-#'  It returns a data frame of the studies that colocalise with the input variant and study,
-#'   including details on the study and reported trait, index variant, and calculated coloc method (see Ref. below) outputs.
+#' This function retrieves colocalisation data for a specific variant from a study with other GWAS studies.
+#' It returns a data frame of the studies that colocalise with the input variant and study,
+#' including details on the study and reported trait, index variant, and calculated coloc method (see Ref. below) outputs.
 #'
 #' @param study_id Character: Open Target Genetics generated ID for the GWAS study.
 #' @param variant_id Character: Open Target Genetics generated ID for the variant (CHRPOSITION_REFALLELE_ALTALLELE or rsID).
@@ -38,7 +38,7 @@
 gwasColocalisation <- function(study_id, variant_id) {
   ## Set up to query Open Targets Genetics API
 
-  cli::cli_progress_step("Connecting the database...", spinner = TRUE)
+  cli::cli_progress_step("Connecting to the Open Targets Genetics GrpahQL API...", spinner = TRUE)
   otg_cli <- ghql::GraphqlClient$new(url = "https://api.genetics.opentargets.org/graphql")
   otg_qry <- ghql::Query$new()
 
