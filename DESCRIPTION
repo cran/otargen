@@ -1,7 +1,8 @@
 Package: otargen
 Type: Package
 Title: Access Open Target Genetics
-Version: 1.1.0
+Version: 1.1.1
+Date: 2024-02-09
 Authors@R: c(
     person("Amir", "Feizi", role = c("aut", "cre"), email = "afeizi@gmail.com"),
     person("Kamalika", "Ray", role = "aut"))
@@ -17,8 +18,8 @@ Config/testthat/edition: 3
 RoxygenNote: 7.2.3
 URL: https://amirfeizi.github.io/otargen/
 NeedsCompilation: no
-Packaged: 2023-12-12 07:28:28 UTC; amir.feizi
+Packaged: 2024-02-21 08:08:05 UTC; amir.feizi
 Author: Amir Feizi [aut, cre],
   Kamalika Ray [aut]
 Repository: CRAN
-Date/Publication: 2023-12-12 13:10:03 UTC
+Date/Publication: 2024-02-21 08:30:02 UTC
