@@ -4,20 +4,20 @@
 \alias{geneticConstraintQuery}
 \title{Retrieve Genetic Constraint data for a specified gene.}
 \usage{
-geneticConstraintQuery(ensemblId)
+geneticConstraintQuery(ensgId)
 }
 \arguments{
-\item{ensemblId}{Character: ENSEMBL ID of the target gene (e.g., ENSG00000169174).}
+\item{ensgId}{Character: ENSEMBL ID of the target gene (e.g., "ENSG00000141510").}
 }
 \value{
-Returns a data frame containing genetic constraint data for the specified gene.
+Returns a tibble containing genetic constraint data for the specified gene.
 }
 \description{
-This function queries the Open Targets Genetics GraphQL API to retrieve genetic constraint data
-for a specified gene.
+This function queries the Open Targets Platform GraphQL API to retrieve genetic constraint data
+for a specified gene, such as pLI or LOEUF scores.
 }
 \examples{
 \dontrun{
-result <- geneticConstraintQuery(ensemblId = "ENSG00000169174")
+result <- geneticConstraintQuery(ensgId = "ENSG00000141510")
 }
 }
