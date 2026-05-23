@@ -1,24 +1,19 @@
-#' Retrieve Known Drugs data for a specified gene.
+#' Retrieve drug and clinical candidate data for a specified gene.
 #'
-#' This function queries the Open Targets GraphQL API to retrieve known drugs data
-#' for a specified gene.
+#' This function queries the Open Targets GraphQL API to retrieve drug
+#' and clinical candidate data for a specified gene.
 #'
 #' @param ensgId Character: ENSEMBL ID of the target gene (e.g., ENSG00000169174).
-#' @param cursor Character: Cursor for pagination (default: NULL).
-#' @param freeTextQuery Character: Free text query to filter results (default: NULL).
-#' @param size Integer: Number of records to retrieve (default: 10).
 #'
-#' @return Returns a data frame containing known drugs data for the specified gene.
+#' @return Returns a data frame containing drug and clinical candidate data for the specified gene.
 #' @examples
 #' \dontrun{
-#' result <- knownDrugsGeneQuery(ensgId = "ENSG00000169174", size = 10)
-#' result <- knownDrugsGeneQuery(ensgId = "ENSG00000169174",
-#'  cursor = NULL, freeTextQuery = NULL, size = 10)
+#' result <- knownDrugsGeneQuery(ensgId = "ENSG00000169174")
 #' }
 #' @importFrom magrittr %>%
 #' @export
 #'
-knownDrugsGeneQuery <- function(ensgId, cursor = NULL, freeTextQuery = NULL, size = 10) {
+knownDrugsGeneQuery <- function(ensgId) {
   if (missing(ensgId) || is.null(ensgId)) {
     stop("Please provide a value for the 'ensgId' argument.")
   }
@@ -29,26 +24,18 @@ knownDrugsGeneQuery <- function(ensgId, cursor = NULL, freeTextQuery = NULL, siz
     con <- ghql::GraphqlClient$new("https://api.platform.opentargets.org/api/v4/graphql")
     qry <- ghql::Query$new()
 
-    query <- "query KnownDrugsQuery($ensgId: String!, $size: Int = 10) {
+    # knownDrugs removed from Target type; replaced with drugAndClinicalCandidates
+    query <- "query KnownDrugsQuery($ensgId: String!) {
       target(ensemblId: $ensgId) {
         id
-        knownDrugs(size: $size) {
+        drugAndClinicalCandidates {
           count
-          cursor
           rows {
-            phase
-            status
-            urls {
-              name
-              url
-            }
-            disease {
-              id
-              name
-            }
+            maxClinicalStage
             drug {
               id
               name
+              drugType
               mechanismsOfAction {
                 rows {
                   actionType
@@ -58,18 +45,27 @@ knownDrugsGeneQuery <- function(ensgId, cursor = NULL, freeTextQuery = NULL, siz
                 }
               }
             }
-            drugType
-            mechanismOfAction
+            diseases {
+              diseaseFromSource
+              disease {
+                id
+                name
+              }
+            }
+            clinicalReports {
+              id
+              source
+              url
+              clinicalStage
+              trialOverallStatus
+            }
           }
         }
       }
     }"
 
     variables <- list(
-      ensgId = ensgId,
-      cursor = cursor,
-      freeTextQuery = freeTextQuery,
-      size = size
+      ensgId = ensgId
     )
 
     qry$query(name = "getKnownDrugsData", x = query)
@@ -80,8 +76,8 @@ knownDrugsGeneQuery <- function(ensgId, cursor = NULL, freeTextQuery = NULL, siz
     output0 <- con$exec(qry$queries$getKnownDrugsData, variables)
     output1 <- jsonlite::fromJSON(output0, flatten = TRUE)
 
-    if (length(output1$data$target$knownDrugs$rows) != 0) {
-      final_output <- output1$data$target$knownDrugs$rows
+    if (length(output1$data$target$drugAndClinicalCandidates$rows) != 0) {
+      final_output <- output1$data$target$drugAndClinicalCandidates$rows
       return(final_output)
     } else {
       message("No data found for the given parameters.")

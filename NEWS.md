@@ -1,3 +1,20 @@
+# otargen 2.0.1
+
+### Bug Fixes
+
+- Fixed HTTP 400 errors caused by Open Targets Platform API schema changes (renamed/removed fields):
+  - `chemblQuery()`: Removed deprecated `variantEffect`, `clinicalStatus`; renamed `clinicalPhase` to `clinicalStage`, `studyStopReason` to `trialWhyStopped`, `studyStopReasonCategories` to `trialStopReasonCategories`.
+  - `clinVarQuery()`: Removed deprecated `variantEffect` from Evidence query.
+  - `geneBurdenQuery()`: Removed deprecated `variantEffect` from Evidence query.
+  - `orphanetQuery()`: Removed deprecated `variantEffect` from Evidence query.
+  - `indicationsQuery()`: Renamed `maxPhaseForIndication` to `maxClinicalStage`; replaced `references` with `clinicalReports`.
+  - `knownDrugsChemblQuery()`: Replaced removed `knownDrugs` field on `Drug` type with `indications` + `clinicalReports`.
+  - `knownDrugsGeneQuery()`: Replaced removed `knownDrugs` field on `Target` type with `drugAndClinicalCandidates`.
+  - `geneOntologyQuery()`: Renamed `name` to `label` on `GeneOntologyTerm` type.
+  - `interactionsQuery()`: Changed `sourceDatabase` parameter type from `String` to `InteractionSourceEnum`.
+
+---
+
 # otargen 2.0.0
 
 ### Major Release
@@ -10,7 +27,7 @@ Following [Open Targets' announcement](https://community.opentargets.org/t/open-
 - 🔍 **Expanded Query Support**: Includes all major data types now available in the merged schema.
 - 📘 **Updated Documentation**: All help files and vignettes have been rewritten to reflect new function usage.
 - 📄 **New Example Articles**: Practical use cases demonstrating the new API queries.
-- ⚠️ **Deprecation Notice**: Many query functions from version 1.1.5 are now deprecated but retained for backward compatibility where possible.
+- **Deprecation Notice**: Many query functions from version 1.1.5 are now deprecated but retained for backward compatibility where possible.
 
 We **highly recommend** upgrading to otargen 2.0.0 for the best experience with the latest Open Targets Platform API.
 

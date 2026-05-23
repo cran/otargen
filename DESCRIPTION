@@ -1,8 +1,8 @@
 Package: otargen
 Type: Package
 Title: Access Open Target
-Version: 2.0.0
-Date: 2025-07-08
+Version: 2.0.1
+Date: 2026-05-20
 Authors@R: c(
     person("Amir", "Feizi", role = c("aut", "cre"), email = "afeizi@gmail.com"))
 Maintainer: Amir Feizi <afeizi@gmail.com>
@@ -11,13 +11,14 @@ Depends: R (>= 3.1.0)
 Imports: ghql, cli, dplyr, jsonlite, magrittr, tibble, tidyr, httr
 License: MIT + file LICENSE
 Encoding: UTF-8
+Language: en-US
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 URL: https://amirfeizi.github.io/otargen/
 BugReports: https://github.com/amirfeizi/otargen/issues
 NeedsCompilation: no
-Packaged: 2025-07-15 18:45:05 UTC; amir_
+Packaged: 2026-05-23 11:25:00 UTC; amir_
 Author: Amir Feizi [aut, cre]
 Repository: CRAN
-Date/Publication: 2025-07-15 19:10:02 UTC
+Date/Publication: 2026-05-23 11:50:34 UTC
